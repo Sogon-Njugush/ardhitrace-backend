@@ -38,13 +38,15 @@ export class Verification {
   })
   status: VerificationStatus;
 
-  // FIX: Allow 'null' for nullable database columns
-  @Column({ nullable: true })
+  // --- FIX START ---
+  // Explicitly tell Postgres this is 'text' to avoid the "Object" error
+  @Column({ type: 'text', nullable: true })
   adminComments: string | null;
 
-  // FIX: Allow 'null' here too
-  @Column({ nullable: true })
+  // Explicitly tell Postgres this is a 'uuid' (since User IDs are UUIDs)
+  @Column({ type: 'uuid', nullable: true })
   verifiedByAdminId: string | null;
+  // --- FIX END ---
 
   @CreateDateColumn()
   submittedAt: Date;
