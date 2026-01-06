@@ -9,12 +9,14 @@ import { VerificationsModule } from './modules/verifications/verifications.modul
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
+import { envValidationSchema } from './config/env.validation';
 
 @Module({
   imports: [
     // Load Environment Variables
     ConfigModule.forRoot({
       isGlobal: true, // Available everywhere
+      validationSchema: envValidationSchema,
     }),
     //  Database Connection (Postgres)
     TypeOrmModule.forRootAsync({
