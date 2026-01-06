@@ -29,26 +29,28 @@ export class UsersService {
       throw new ConflictException('Email or Phone Number already exists');
     }
 
-    // Hash the password
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(createUserDto.password, salt);
 
     const user = this.usersRepository.create({
       ...createUserDto,
-      passwordHash, // Store the hash, not the plain text
+      passwordHash,
     });
 
     const savedUser = await this.usersRepository.save(user);
 
-    // Remove sensitive data before returning
-    delete savedUser.passwordHash;
-    return savedUser;
+    // FIX: Don't use delete. Use destructuring to separate the hash.
+    const { passwordHash: _, ...result } = savedUser;
+
+    // Cast back to User to satisfy return type (or use a separate Response DTO in a real app)
+    return result as User;
   }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
+  // FIX: Allow 'null' in return type
+  async findOneByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'passwordHash', 'role', 'fullName', 'isVerified'], // Explicitly select password for login check
+      select: ['id', 'email', 'passwordHash', 'role', 'fullName', 'isVerified'],
     });
   }
 

@@ -22,15 +22,14 @@ export class Verification {
   @ManyToOne(() => User, (user) => user.verifications)
   user: User;
 
-  // Documents stored in Supabase Storage / S3
   @Column({ nullable: true })
-  idDocumentUrl: string; // National ID Front
+  idDocumentUrl: string;
 
   @Column({ nullable: true })
-  idDocumentBackUrl: string; // National ID Back
+  idDocumentBackUrl: string;
 
   @Column({ nullable: true })
-  kraPinUrl: string; // Optional: Tax PIN
+  kraPinUrl: string;
 
   @Column({
     type: 'enum',
@@ -39,11 +38,13 @@ export class Verification {
   })
   status: VerificationStatus;
 
+  // FIX: Allow 'null' for nullable database columns
   @Column({ nullable: true })
-  adminComments: string; // Why it was rejected
+  adminComments: string | null;
 
+  // FIX: Allow 'null' here too
   @Column({ nullable: true })
-  verifiedByAdminId: string; // ID of the Admin who approved it
+  verifiedByAdminId: string | null;
 
   @CreateDateColumn()
   submittedAt: Date;

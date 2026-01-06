@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -15,15 +16,18 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        // We use '!' to tell TS it's defined
+        secret: configService.get<string>('JWT_SECRET')!,
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION') || '7d',
+          // FIX: Cast to 'any' to resolve the 'StringValue' type mismatch
+          expiresIn: (configService.get<string>('JWT_EXPIRATION') ||
+            '7d') as any,
         },
       }),
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtAuthGuard],
-  exports: [AuthService, JwtAuthGuard], // Export Guard to use in other modules
+  exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}
